@@ -15,6 +15,7 @@ class BestBooks extends React.Component {
       this.setState({
         books: booksResponse.data,
       });
+      console.log(this.state.books);
     })
       .catch(error => alert(error.message));
   }
@@ -28,11 +29,11 @@ class BestBooks extends React.Component {
             {
               this.state.books.map(book => {
                 return (
-                  <>
+                  
                     <Carousel.Item>
                       <img
                         className="d-block w-100"
-                        src="holder.js/800x400?text=First slide&bg=373940"
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP8AAADGCAMAAAAqo6adAAAABlBMVEUAAAAORKmU5gWIAAAA3klEQVR4nO3PAQEAAAjDoNu/tEEYDdjN1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W34b/H769AMf5McvaAAAAAElFTkSuQmCC"
                         alt="First slide"
                       />
                       <Carousel.Caption>
@@ -42,7 +43,7 @@ class BestBooks extends React.Component {
                         <p>{book.email}</p>
                       </Carousel.Caption>
                     </Carousel.Item>
-                  </>
+                  
                 )
               })
             }
