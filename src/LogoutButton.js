@@ -1,12 +1,12 @@
 import { Component } from "react";
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class LogoutButton extends Component {
 
   render() {
     return (
-      <button onClick={this.props.onLogout}>
-        Log Out
-      </button>
+      <Button>Log out</Button>
     );
   }
 };
