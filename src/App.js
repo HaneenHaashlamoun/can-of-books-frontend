@@ -2,12 +2,14 @@ import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import BestBooks from './BestBooks';
+import Login from './Login';
+import Profile from './Profile';
 import {
   BrowserRouter as Router,
   Switch,
   Route
 } from "react-router-dom";
-
 class App extends React.Component {
 
   constructor(props) {
@@ -37,6 +39,11 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/">
               {/* TODO: if the user is logged in, render the `BestBooks` component, if they are not, render the `Login` component */}
+              <Login />              
+              <BestBooks />
+            </Route>
+            <Route exact path="/profile">
+              <Profile />
             </Route>
             {/* TODO: add a route with a path of '/profile' that renders a `Profile` component */}
           </Switch>
