@@ -1,14 +1,52 @@
 import React from 'react';
 import axios from 'axios';
 import Carousel from 'react-bootstrap/Carousel';
+import Button from 'react-bootstrap/Button';
+import { AddBook } from './AddBook';
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      books: []
+      books: [],
+      showAddModal: false,
     }
   }
   /* TODO: Make a GET request to your API to fetch books for the logged in user  */
+  ///////////////////////////////////
+  handelAddModal = (e) => {
+    e.preventDefault();
+
+    const reqBody = {
+      title: e.target.bookName.value,
+      description: e.target.bookDescription.value,
+      status: e.target.bookStatus.value,
+      email:e.target.email.value
+    }
+
+    axios.post(`${process.env.REACT_APP_API_URL}/books`, reqBody).then(createdBookObject => {
+      this.state.books.push(createdBookObject.data); 
+      this.setState({ books: this.state.books }); 
+      this.handelDisplayAddModal(); 
+    }).catch(() => alert("Something went wrong!"));
+  }
+  ///////////////////////////////////////////////
+  handelDeleteBook = (bookId) => {
+
+
+
+    axios.delete(`${process.env.REACT_APP_API_URL}/books/${bookId}`).then(deleteResponse => {
+      if (deleteResponse.data.deletedCount === 1) {
+        const newBooks = this.state.books.filter(book => book._id !== bookId);
+      
+        this.setState({ books: newBooks });
+      }
+    }).catch(() => alert("something went wrong"));
+  }
+
+
+  handelDisplayAddModal = () => {
+    this.setState({ showAddModal: !this.state.showAddModal });
+  }
   componentDidMount = () => {    
 
     axios.get(`${process.env.REACT_APP_API_URL}/books`).then((booksResponse) => {
@@ -23,7 +61,20 @@ class BestBooks extends React.Component {
   render() {/* TODO: render user's books in a Carousel */
     return (
       <>
-        <h2>My Essential Lifelong Learning &amp; Formation Shelf</h2>
+          <Button onClick={this.handelDisplayAddModal}>
+          Show Add Book Modal Form
+        </Button>
+       
+        {
+          this.state.showAddModal &&
+          <>
+            <AddBook
+              show={this.state.showAddModal}
+              handelAddModal={this.handelAddModal}
+              handelDisplayAddModal={this.handelDisplayAddModal}
+            />
+          </>
+        }
         {this.state.books.length ? (
           <Carousel>
             {
@@ -35,6 +86,7 @@ class BestBooks extends React.Component {
                         className="d-block w-100"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP8AAADGCAMAAAAqo6adAAAABlBMVEUAAAAORKmU5gWIAAAA3klEQVR4nO3PAQEAAAjDoNu/tEEYDdjN1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W34b/H769AMf5McvaAAAAAElFTkSuQmCC"
                         alt="First slide"
+                        style={{width:"800px"} ,{height:"400px"}}
                       />
                       <Carousel.Caption>
                         <h3>{book.title}</h3>
@@ -42,6 +94,7 @@ class BestBooks extends React.Component {
                         <p>{book.status}</p>
                         <p>{book.email}</p>
                       </Carousel.Caption>
+                      <Button variant="danger" onClick={() => this.handelDeleteBook(book._id)}>Delete Book</Button>
                     </Carousel.Item>
                   
                 )
