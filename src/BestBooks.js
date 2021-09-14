@@ -3,12 +3,15 @@ import axios from 'axios';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { AddBook } from './AddBook';
+import { UpdateBooks } from './UpdateBooks';
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       books: [],
       showAddModal: false,
+      showUpdateModal: false,
+      selectedBookDataObj: {}
     }
   }
   /* TODO: Make a GET request to your API to fetch books for the logged in user  */
@@ -31,9 +34,6 @@ class BestBooks extends React.Component {
   }
   ///////////////////////////////////////////////
   handelDeleteBook = (bookId) => {
-
-    console.log(bookId)
-
     axios.delete(`${process.env.REACT_APP_API_URL}/books/${bookId}`).then(deleteResponse => {
       if (deleteResponse.data.deletedCount === 1) {
         const newBooks = this.state.books.filter(book => book._id !== bookId);
@@ -43,6 +43,41 @@ class BestBooks extends React.Component {
     }).catch(() => alert("something went wrong"));
   }
 
+  // here to Update
+  //////////////////////////////////////////////////////////
+  handelUpdateModal = (e) => {
+    e.preventDefault();    
+    const reqBody = {
+      title: e.target.bookName.value,
+      description: e.target.bookDescription.value,
+      status: e.target.bookStatus.value,
+      email: e.target.email.value,
+      _id: this.state.selectedBookDataObj._id
+    }    
+    axios.put(`${process.env.REACT_APP_API_URL}/books/${reqBody._id}`, reqBody).then(updatedBookObject => {
+      const updateBookArr = this.state.books.map(book => {
+        if (book._id === this.state.selectedBookDataObj._id) {
+          book = updatedBookObject.data;
+          return book;
+        }
+        return book;
+      });
+      this.setState({
+        books: updateBookArr,
+        selectedBookDataObj: {}
+      })      
+      this.handelDisplayUpdateModal();
+    }).catch(() => alert("Something went wrong!"));
+  }
+
+  handelDisplayUpdateModal = async (bookObj) => {    
+    await this.setState({
+      showUpdateModal: !this.state.showUpdateModal,
+      selectedBookDataObj: bookObj
+    });    
+    // handelUpdateModal();
+  }
+  //////////////////////////////////////////////////////////
 
   handelDisplayAddModal = () => {
     this.setState({ showAddModal: !this.state.showAddModal });
@@ -52,8 +87,7 @@ class BestBooks extends React.Component {
     axios.get(`${process.env.REACT_APP_API_URL}/books`).then((booksResponse) => {
       this.setState({
         books: booksResponse.data,
-      });
-      console.log(this.state.books);
+      });      
     })
       .catch(error => alert(error.message));
   }
@@ -64,7 +98,6 @@ class BestBooks extends React.Component {
         <Button onClick={this.handelDisplayAddModal}>
           Show Add Book Modal Form
         </Button>
-
         {
           this.state.showAddModal &&
           <>
@@ -75,17 +108,25 @@ class BestBooks extends React.Component {
             />
           </>
         }
+        {
+          this.state.showUpdateModal &&
+          <>
+            <UpdateBooks
+              show={this.state.showUpdateModal}
+              handelUpdateModal={this.handelUpdateModal}
+              handelDisplayUpdateModal={this.handelDisplayUpdateModal}              
+              selectedBookDataObj={this.state.selectedBookDataObj}
+            />
+          </>
+        }
         {this.state.books.length ? (
           <div>
             {
               this.state.books.map(book => {
                 return (
-
-
                   <Card style={{ width: '18rem' }}>
                     <Card.Body>
                       <Card.Title>{book.title}</Card.Title>
-
                       <Card.Text>
                         <p>{book.description}</p>
                       </Card.Text>
@@ -94,9 +135,10 @@ class BestBooks extends React.Component {
                         <p>{book.email}</p>
                       </Card.Text>
                       <Button variant="primary" onClick={() => this.handelDeleteBook(book._id)}>Delete Book</Button>
+                      <br />
+                      <Button variant="warning" onClick={() => this.handelDisplayUpdateModal(book)}>Update Book</Button>
                     </Card.Body>
                   </Card>
-
                 )
               })
             }
@@ -111,62 +153,3 @@ class BestBooks extends React.Component {
 
 export default BestBooks;
 
-
-// class MyFavoriteBooks extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//      userData: [],
-
-//     }
-
-//   }
-
-//    componentDidMount = async  () => {
-//     const { user } = this.props.auth0;
-//     //http://localhost:3001/books?userEmail=algourabrar@gmail.com
-//     let url = `http://localhost:3001/books?userEmail=${user.email}`
-//     let resData = await axios.get(url);
-
-//     await this.setState({
-//       userData: resData.data
-//     })
-//     console.log(this.state.userData)
-//   }
-
-
-
-
-
-//   render() {
-
-
-//     return (
-//       <>
-
-
-//         {this.state.userData == null ?
-//           <Jumbotron>
-//             <h1>My Favorite Books</h1>
-//             <p>
-//               This is a collection of my favorite books
-//             </p>
-//           </Jumbotron>
-//           :
-
-//           this.state.userData.map(item => {
-//             return(
-//             <Card>
-//               <Card.Body>Name :{item.name}</Card.Body>
-//               <Card.Body>Description :{item.description}</Card.Body>
-//               <Card.Body>Status : {item.status}</Card.Body>
-//             </Card>
-//         )  })
-
-//         }
-//       </>
-//     )
-//   }
-// }
-
-// export default withAuth0(MyFavoriteBooks);
