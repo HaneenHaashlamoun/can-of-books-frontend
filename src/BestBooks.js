@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import Carousel from 'react-bootstrap/Carousel';
+import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { AddBook } from './AddBook';
 class BestBooks extends React.Component {
@@ -20,24 +20,24 @@ class BestBooks extends React.Component {
       title: e.target.bookName.value,
       description: e.target.bookDescription.value,
       status: e.target.bookStatus.value,
-      email:e.target.email.value
+      email: e.target.email.value
     }
 
     axios.post(`${process.env.REACT_APP_API_URL}/books`, reqBody).then(createdBookObject => {
-      this.state.books.push(createdBookObject.data); 
-      this.setState({ books: this.state.books }); 
-      this.handelDisplayAddModal(); 
+      this.state.books.push(createdBookObject.data);
+      this.setState({ books: this.state.books });
+      this.handelDisplayAddModal();
     }).catch(() => alert("Something went wrong!"));
   }
   ///////////////////////////////////////////////
   handelDeleteBook = (bookId) => {
 
-
+    console.log(bookId)
 
     axios.delete(`${process.env.REACT_APP_API_URL}/books/${bookId}`).then(deleteResponse => {
       if (deleteResponse.data.deletedCount === 1) {
         const newBooks = this.state.books.filter(book => book._id !== bookId);
-      
+
         this.setState({ books: newBooks });
       }
     }).catch(() => alert("something went wrong"));
@@ -47,7 +47,7 @@ class BestBooks extends React.Component {
   handelDisplayAddModal = () => {
     this.setState({ showAddModal: !this.state.showAddModal });
   }
-  componentDidMount = () => {    
+  componentDidMount = () => {
 
     axios.get(`${process.env.REACT_APP_API_URL}/books`).then((booksResponse) => {
       this.setState({
@@ -61,10 +61,10 @@ class BestBooks extends React.Component {
   render() {/* TODO: render user's books in a Carousel */
     return (
       <>
-          <Button onClick={this.handelDisplayAddModal}>
+        <Button onClick={this.handelDisplayAddModal}>
           Show Add Book Modal Form
         </Button>
-       
+
         {
           this.state.showAddModal &&
           <>
@@ -76,31 +76,31 @@ class BestBooks extends React.Component {
           </>
         }
         {this.state.books.length ? (
-          <Carousel>
+          <div>
             {
               this.state.books.map(book => {
                 return (
-                  
-                    <Carousel.Item>
-                      <img
-                        className="d-block w-100"
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAP8AAADGCAMAAAAqo6adAAAABlBMVEUAAAAORKmU5gWIAAAA3klEQVR4nO3PAQEAAAjDoNu/tEEYDdjN1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W39bf1t/W34b/H769AMf5McvaAAAAAElFTkSuQmCC"
-                        alt="First slide"
-                        style={{width:"800px"} ,{height:"400px"}}
-                      />
-                      <Carousel.Caption>
-                        <h3>{book.title}</h3>
+
+
+                  <Card style={{ width: '18rem' }}>
+                    <Card.Body>
+                      <Card.Title>{book.title}</Card.Title>
+
+                      <Card.Text>
                         <p>{book.description}</p>
-                        <p>{book.status}</p>
+                      </Card.Text>
+                      <p>{book.status}</p>
+                      <Card.Text>
                         <p>{book.email}</p>
-                      </Carousel.Caption>
-                      <Button variant="danger" onClick={() => this.handelDeleteBook(book._id)}>Delete Book</Button>
-                    </Carousel.Item>
-                  
+                      </Card.Text>
+                      <Button variant="primary" onClick={() => this.handelDeleteBook(book._id)}>Delete Book</Button>
+                    </Card.Body>
+                  </Card>
+
                 )
               })
             }
-          </Carousel>
+          </div>
         ) : (
           <h3>book collection is empty :(</h3>
         )}
@@ -110,7 +110,6 @@ class BestBooks extends React.Component {
 }
 
 export default BestBooks;
-
 
 
 // class MyFavoriteBooks extends React.Component {
