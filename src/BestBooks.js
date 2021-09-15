@@ -4,6 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { AddBook } from './AddBook';
 import { UpdateBooks } from './UpdateBooks';
+import { withAuth0 } from '@auth0/auth0-react';
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +24,7 @@ class BestBooks extends React.Component {
       title: e.target.bookName.value,
       description: e.target.bookDescription.value,
       status: e.target.bookStatus.value,
-      email: e.target.email.value
+      email:this.props.auth0.user.email
     }
 
     axios.post(`${process.env.REACT_APP_API_URL}/books`, reqBody).then(createdBookObject => {
@@ -51,7 +52,7 @@ class BestBooks extends React.Component {
       title: e.target.bookName.value,
       description: e.target.bookDescription.value,
       status: e.target.bookStatus.value,
-      email: e.target.email.value,
+      email: this.props.auth0.user.email,
       _id: this.state.selectedBookDataObj._id
     }    
     axios.put(`${process.env.REACT_APP_API_URL}/books/${reqBody._id}`, reqBody).then(updatedBookObject => {
@@ -84,7 +85,7 @@ class BestBooks extends React.Component {
   }
   componentDidMount = () => {
 
-    axios.get(`${process.env.REACT_APP_API_URL}/books`).then((booksResponse) => {
+    axios.get(`${process.env.REACT_APP_API_URL}/books?email=${this.props.auth0.user.email}`).then((booksResponse) => {
       this.setState({
         books: booksResponse.data,
       });      
@@ -151,5 +152,5 @@ class BestBooks extends React.Component {
   }
 }
 
-export default BestBooks;
+export default withAuth0(BestBooks);
 
